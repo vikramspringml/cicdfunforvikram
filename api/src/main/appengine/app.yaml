@@ -1,0 +1,6 @@
+runtime: java11
+service: 'simpleapp-api'
+handlers:
+- url: /.*
+  secure: always
+  script: auto
