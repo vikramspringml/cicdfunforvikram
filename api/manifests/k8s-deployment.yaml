@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simpleapi
+spec:
+  selector:
+    matchLabels:
+      app: simpleapi
+  replicas: 2 # Number of replicas that will be created for this deployment
+  template:
+    metadata:
+      labels:
+        app: simpleapi
+    spec:
+      containers:
+        - name: simpleapi
+          image: simpleapi:1.0 
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080

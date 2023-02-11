@@ -1,0 +1,22 @@
+steps:
+- id: 'Configure GKE Cluster'
+  name: 'gcr.io/google.com/cloudsdktool/google-cloud-cli:latest'
+  entrypoint: 'bash'
+  args: 
+  - '-c' 
+  - |-
+    gcloud container clusters get-credentials ${_GKE_CLUSTER_NAME} --region ${_GKE_CLUSTER_REGION} --project ${PROJECT_ID}
+    curl -s checkip.dyndns.org | sed -e 's/.*Current IP Address: //' -e 's/<.*$//' >> /workspace/ip.txt
+    cat /workspace/ip.txt
+    gcloud container clusters update ${_GKE_CLUSTER_NAME} --region ${_GKE_CLUSTER_REGION} --project ${PROJECT_ID} \
+        --enable-master-authorized-networks \
+        --master-authorized-networks $(cat /workspace/ip.txt)/32
+- id: 'Build w Skaffold'
+  name: 'gcr.io/k8s-skaffold/skaffold'
+  args: ['skaffold', 'build', '-d=gcr.io/${PROJECT_ID}/simpleapi', '-p', 'cloud-build', '--file-output', '/workspace/build-${SHORT_SHA}.json']   
+- id: 'Render w Skaffold'
+  name: 'gcr.io/k8s-skaffold/skaffold'
+  args: ['skaffold', 'render', '-a', '/workspace/build-${SHORT_SHA}.json', '--output', '/workspace/render-${SHORT_SHA}.yaml', '-p', 'cloud-build']
+- id: 'Deploy w Skaffold'
+  name: 'gcr.io/k8s-skaffold/skaffold'
+  args: ['skaffold', 'apply', '/workspace/render-${SHORT_SHA}.yaml']

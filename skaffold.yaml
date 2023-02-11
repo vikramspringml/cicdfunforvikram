@@ -1,0 +1,27 @@
+apiVersion: skaffold/v4beta2
+kind: Config
+metadata:
+  name: cicdfunforvikram
+build:
+  googleCloudBuild: {}
+  artifacts:
+  - image: simpleapi
+    context: api
+    buildpacks:
+      builder: gcr.io/buildpacks/builder:v1
+manifests:
+  kustomize:
+    paths:
+    - api/manifests/base
+deploy:
+      kubectl: {}
+profiles:
+  - name: cloud-build
+    manifests:
+      kustomize:
+        paths:
+        - api/manifests/cb
+    deploy:
+      kubectl: {}      
+      
+        

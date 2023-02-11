@@ -102,16 +102,7 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>appengine-maven-plugin</artifactId>
-                <version>2.4.0</version>
-                <configuration>
-                    <projectId>GCLOUD_CONFIG</projectId>
-                    <version>enterprise-dialogflow-demo</version>
-                </configuration>
-            </plugin>
+            
         </plugins>
     </build>
 
